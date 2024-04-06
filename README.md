@@ -2,7 +2,7 @@
 This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet.
 
 ## Installation
-Add the GitHub repository or Jitpack to your build.gradle.kts:
+Add the Jitpack to your build.gradle.kts:
 ```kotlin
 repositories {
     // Jitpack
