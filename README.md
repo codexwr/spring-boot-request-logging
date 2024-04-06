@@ -48,7 +48,7 @@ codexwr:
         - $.*.birthday
       mask-string: '{{***}}'
 ```
-- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `masking-request-payload-pattern` and `masking-response-payload-pattern` configurations.
+- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `masking-request-payload-pattern` and `masking-response-payload-pattern` pattern.
 
 ## Log Sample
 ```yaml
