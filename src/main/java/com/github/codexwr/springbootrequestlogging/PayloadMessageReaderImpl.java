@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -16,8 +17,9 @@ import org.springframework.web.util.WebUtils;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
+@RequiredArgsConstructor
 class PayloadMessageReaderImpl implements PayloadMessageReader {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Nullable
     @Override

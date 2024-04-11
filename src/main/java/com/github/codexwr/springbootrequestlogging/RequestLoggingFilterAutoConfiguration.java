@@ -1,5 +1,6 @@
 package com.github.codexwr.springbootrequestlogging;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,8 +17,8 @@ import org.springframework.context.annotation.Bean;
 class RequestLoggingFilterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    PayloadMessageReader payloadMessageReader() {
-        return new PayloadMessageReaderImpl();
+    PayloadMessageReader payloadMessageReader(ObjectMapper objectMapper) {
+        return new PayloadMessageReaderImpl(objectMapper);
     }
 
     @Bean
