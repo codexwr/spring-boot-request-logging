@@ -1,3 +1,5 @@
+[![Release](https://jitpack.io/v/codexwr/spring-boot-request-logging.svg)](https://jitpack.io/#codexwr/spring-boot-request-logging)
+
 # Request Logging Library
 This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet.
 
@@ -15,7 +17,7 @@ repositories {
 Add the dependency to your `build.gradle.kts`:
 ```kotlin
 dependencies {
-    implementation("com.github.codexwr:spring-boot-request-logging:1.0.0")
+    implementation("com.github.codexwr:spring-boot-request-logging:1.0.1")
 }
 ```
 
