@@ -66,8 +66,17 @@ publishing {
 
             pom {
                 withXml {
-                    val nodes = asNode().get("dependencyManagement") as NodeList
-                    nodes.forEach { asNode().remove(it as Node) }
+//                    val nodes = asNode().get("dependencyManagement") as NodeList
+//                    nodes.forEach { asNode().remove(it as Node) }
+                    val dmNode = (asNode().get("dependencyManagement") as? NodeList)?.firstOrNull() as? Node
+                    val dNode = (dmNode?.get("dependencies") as? NodeList)?.firstOrNull() as? Node
+                    (dNode?.get("dependency") as NodeList).forEach {
+                        val node = it as? Node ?: return@forEach
+                        val grpNode = (node.get("groupId") as? NodeList)?.firstOrNull() as? Node ?: return@forEach
+                        if (grpNode.text().startsWith("org.springframework")) {
+                            node.parent().remove(node)
+                        }
+                    }
                 }
 
                 name = project.name
