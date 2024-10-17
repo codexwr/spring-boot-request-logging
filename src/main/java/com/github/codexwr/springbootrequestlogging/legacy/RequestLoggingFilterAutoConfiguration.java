@@ -1,4 +1,4 @@
-package com.github.codexwr.springbootrequestlogging;
+package com.github.codexwr.springbootrequestlogging.legacy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;

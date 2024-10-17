@@ -1,4 +1,4 @@
-package com.github.codexwr.springbootrequestlogging;
+package com.github.codexwr.springbootrequestlogging.legacy;
 
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;

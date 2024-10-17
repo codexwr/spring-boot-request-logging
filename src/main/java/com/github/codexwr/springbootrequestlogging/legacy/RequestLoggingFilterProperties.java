@@ -1,4 +1,4 @@
-package com.github.codexwr.springbootrequestlogging;
+package com.github.codexwr.springbootrequestlogging.legacy;
 
 import jakarta.annotation.Nullable;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.Set;
 @Data
 @ConfigurationProperties(prefix = RequestLoggingFilterProperties.REQUEST_LOGGING_FILTER)
 public class RequestLoggingFilterProperties {
-    static final String REQUEST_LOGGING_FILTER = "codexwr.springboot.request-logging";
+    static final String REQUEST_LOGGING_FILTER = "codexwr.springboot.request-logging.legacy";
     static final String REQUEST_LOGGING_FILTER_ENABLED = REQUEST_LOGGING_FILTER + ".enabled";
 
     /**

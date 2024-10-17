@@ -1,4 +1,4 @@
-package com.github.codexwr.springbootrequestlogging;
+package com.github.codexwr.springbootrequestlogging.legacy;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
