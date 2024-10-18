@@ -1,1 +1,1 @@
-com.github.codexwr.springbootrequestlogging.RequestLoggingFilterAutoConfiguration
+com.github.codexwr.springbootrequestlogging.configuration.LoggingFilterAutoConfiguration
