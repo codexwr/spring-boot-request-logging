@@ -2,6 +2,7 @@ package com.github.codexwr.springbootrequestlogging.reactor;
 
 import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
 import com.github.codexwr.springbootrequestlogging.component.IgnoreLoggingPath;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -24,7 +25,8 @@ public class WebfluxLoggingFilter implements WebFilter, Ordered {
     }
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    @Nonnull
+    public Mono<Void> filter(ServerWebExchange exchange, @Nonnull WebFilterChain chain) {
         if (isIgnoreLogging(exchange.getRequest()))
             return chain.filter(exchange);
 

@@ -41,7 +41,6 @@ class DefaultLogPrinter implements LogPrinter {
         assembleUrl(msg, httpMethod, url, queryString);
         assembleClientInfo(msg, remoteAddr, sessionId);
         assembleHeader(msg, httpMethod, url, header);
-//        assembleRequestBody(msg, httpMethod, url, bodyContentType, body);
 
         logger.info(msg.toString());
     }
@@ -97,7 +96,8 @@ class DefaultLogPrinter implements LogPrinter {
     private void assembleUsername(StringBuilder msg) {
         if (!properties.isIncludeClientInfo()) return;
 
-        var username = usernameProvider() != null ? usernameProvider().getUsername() : null;
+        var usernameProvider = usernameProvider();
+        var username = usernameProvider != null ? usernameProvider.getUsername() : null;
         if (StringUtils.hasText(username))
             msg.append(", username=").append(username);
     }

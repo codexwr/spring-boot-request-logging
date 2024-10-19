@@ -1,5 +1,6 @@
 package com.github.codexwr.springbootrequestlogging.reactor;
 
+import jakarta.annotation.Nonnull;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
@@ -18,7 +19,8 @@ class CachedResponseDecorator extends ServerHttpResponseDecorator implements Log
     }
 
     @Override
-    public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
+    @Nonnull
+    public Mono<Void> writeWith(@Nonnull Publisher<? extends DataBuffer> body) {
         if (!isCachedBody())
             return super.writeWith(body);
 

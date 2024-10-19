@@ -1,5 +1,6 @@
 package com.github.codexwr.springbootrequestlogging.reactor;
 
+import jakarta.annotation.Nonnull;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -19,6 +20,7 @@ class CachedRequestDecorator extends ServerHttpRequestDecorator implements Loggi
     }
 
     @Override
+    @Nonnull
     public Flux<DataBuffer> getBody() {
         return Mono.justOrEmpty(cachedBody) // 1. 캐쉬 사용
                 .switchIfEmpty(getCachedContentBody()) // 2. 캐쉬가 없으면 캐쉬 처리

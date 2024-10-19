@@ -1,6 +1,7 @@
 package com.github.codexwr.springbootrequestlogging.reactor;
 
 import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
+import jakarta.annotation.Nonnull;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
@@ -26,17 +27,19 @@ class LoggingResponseDecorator extends ServerHttpResponseDecorator {
     }
 
     @Override
-    public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
+    @Nonnull
+    public Mono<Void> writeWith(@Nonnull Publisher<? extends DataBuffer> body) {
         return super.writeWith(body).then(logPrint());
     }
 
     @Override
-    public Mono<Void> writeAndFlushWith(Publisher<? extends Publisher<? extends DataBuffer>> body) {
+    @Nonnull
+    public Mono<Void> writeAndFlushWith(@Nonnull Publisher<? extends Publisher<? extends DataBuffer>> body) {
         return super.writeAndFlushWith(body).then(logPrint());
     }
 
     @Override
-    public void beforeCommit(Supplier<? extends Mono<Void>> action) {
+    public void beforeCommit(@Nonnull Supplier<? extends Mono<Void>> action) {
         super.beforeCommit(() -> action.get().then(logPrint()));
     }
 

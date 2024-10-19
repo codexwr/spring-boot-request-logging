@@ -61,6 +61,7 @@ class DefaultHttpHeaderMask implements HttpHeaderMask {
         return generateHeaderMask(headers, pattern.getValue());
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private HttpHeaders generateHeaderMask(HttpHeaders headers, Set<String> maskKeys) {
         if (CollectionUtils.isEmpty(headers) || CollectionUtils.isEmpty(maskKeys)) return headers;
 

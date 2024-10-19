@@ -1,6 +1,5 @@
 package com.github.codexwr.springbootrequestlogging.configuration;
 
-import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
 import com.github.codexwr.springbootrequestlogging.component.*;
 import com.github.codexwr.springbootrequestlogging.reactor.WebfluxLoggingFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
