@@ -1,20 +1,20 @@
 package com.github.codexwr.springbootrequestlogging.configuration;
 
-import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
 import com.github.codexwr.springbootrequestlogging.component.*;
 import com.github.codexwr.springbootrequestlogging.reactor.WebfluxLoggingFilter;
+import com.github.codexwr.springbootrequestlogging.servlet.ServletLoggingFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LoggingFilterAutoConfigurationTest {
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(LoggingFilterAutoConfiguration.class));
 
     private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
@@ -76,5 +76,15 @@ class LoggingFilterAutoConfigurationTest {
                 .isExactlyInstanceOf(NoSuchBeanDefinitionException.class)
         );
         reactiveContextRunner.run(context -> assertThat(context.getBean(WebfluxLoggingFilter.class)).isInstanceOf(WebfluxLoggingFilter.class));
+    }
+
+    @Test
+    @DisplayName("[servlet] servletLoggingFilter 로딩")
+    void servletLoggingFilter() {
+        contextRunner.run(context -> assertThat(context.getBean(ServletLoggingFilter.class)).isInstanceOf(ServletLoggingFilter.class));
+
+        reactiveContextRunner.run(context -> assertThatThrownBy(() -> context.getBean(ServletLoggingFilter.class))
+                .isExactlyInstanceOf(NoSuchBeanDefinitionException.class)
+        );
     }
 }

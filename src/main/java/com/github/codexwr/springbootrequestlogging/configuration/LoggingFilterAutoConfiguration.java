@@ -2,6 +2,7 @@ package com.github.codexwr.springbootrequestlogging.configuration;
 
 import com.github.codexwr.springbootrequestlogging.component.*;
 import com.github.codexwr.springbootrequestlogging.reactor.WebfluxLoggingFilter;
+import com.github.codexwr.springbootrequestlogging.servlet.ServletLoggingFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -53,5 +54,11 @@ class LoggingFilterAutoConfiguration {
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
     WebfluxLoggingFilter webfluxLoggingFilter(LogPrinter logPrinter, IgnoreLoggingPath ignoreLoggingPath, LoggingFilterProperties properties) {
         return new WebfluxLoggingFilter(logPrinter, ignoreLoggingPath, properties.isIncludeRequestBody(), properties.isIncludeResponseBody(), properties.getFilterOrder());
+    }
+
+    @Bean
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    ServletLoggingFilter servletLoggingFilter(LogPrinter logPrinter, IgnoreLoggingPath ignoreLoggingPath, LoggingFilterProperties properties) {
+        return new ServletLoggingFilter(logPrinter, ignoreLoggingPath, properties.isIncludeRequestBody(), properties.isIncludeResponseBody(), properties.getFilterOrder());
     }
 }
