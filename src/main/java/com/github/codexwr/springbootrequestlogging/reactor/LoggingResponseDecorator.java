@@ -13,7 +13,7 @@ import reactor.core.publisher.Sinks;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-class LoggingResponseDecorator extends ServerHttpResponseDecorator {
+class LoggingResponseDecorator extends ServerHttpResponseDecorator implements LoggingDecorator {
     private final LoggingRequestDecorator loggingRequestDelegate;
     private final LogPrinter logPrinter;
 
@@ -61,8 +61,9 @@ class LoggingResponseDecorator extends ServerHttpResponseDecorator {
     }
 
     private String getResponseBody() {
-        if (getDelegate() instanceof CachedResponseDecorator) {
-            return ((CachedResponseDecorator) getDelegate()).getCachedContentString();
+        var delegate = getNativeResponse(getDelegate(), CachedResponseDecorator.class);
+        if (delegate != null) {
+            return delegate.getCachedContentString();
         }
 
         return null;

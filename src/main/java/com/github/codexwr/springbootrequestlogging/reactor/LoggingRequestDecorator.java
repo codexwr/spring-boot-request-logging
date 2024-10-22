@@ -40,8 +40,10 @@ class LoggingRequestDecorator extends ServerHttpRequestDecorator implements Logg
 
     public Mono<Optional<String>> getRequestBody() {
         Mono<Optional<String>> content = Mono.just(Optional.empty());
-        if (getDelegate() instanceof CachedRequestDecorator) {
-            content = ((CachedRequestDecorator) getDelegate()).getCachedContentString()
+
+        var delegate = getNativeRequest(getDelegate(), CachedRequestDecorator.class);
+        if (delegate != null) {
+            content = delegate.getCachedContentString()
                     .map(Optional::of)
                     .defaultIfEmpty(Optional.empty());
         }
