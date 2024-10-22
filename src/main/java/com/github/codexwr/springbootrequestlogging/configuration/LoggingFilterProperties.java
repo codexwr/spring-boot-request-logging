@@ -3,12 +3,12 @@ package com.github.codexwr.springbootrequestlogging.configuration;
 import jakarta.annotation.Nullable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
 
 import java.util.List;
 import java.util.Set;
+
 
 @Data
 @ConfigurationProperties(prefix = LoggingFilterProperties.PREFIX)
@@ -25,23 +25,24 @@ public class LoggingFilterProperties {
      * Filter order of request logging filter.
      * Default value is SecurityProperties.DEFAULT_FILTER_ORDER - 1
      */
-    private int filterOrder = SecurityProperties.DEFAULT_FILTER_ORDER - 1;
+    private int filterOrder = -101;
 
     /**
      * Url patterns to exclude from logging.
      * Url is tested using 'AntPathMatcher'.
      * <pre>
-     *     exclude-logging-paths:
-     *       - method: post
-     *         path-pattern:
-     *           - /api/v1/users
-     *           - /api/v1/users/&#42;&#42;
-     *       - method: get
-     *         path-pattern:
-     *           - /api-docs/&#42;&#42;
+     * <code>
+     *     exclude-logging-paths:<br/>
+     *     &nbsp;&nbsp;- method: post<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- /api/v1/users<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- /api/v1/users/&#42;&#42;<br/>
+     *     &nbsp;&nbsp;- method: get<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- /api-docs/&#42;&#42;
+     * </code>
      * </pre>
      */
-
     @Nullable
     private List<ExcludeLoggingPath> excludeLoggingPaths = null;
 
@@ -63,17 +64,19 @@ public class LoggingFilterProperties {
     /**
      * Masks the value corresponding to the name of specified Url.
      * <pre>
-     *     path-header-masks:
-     *      - method: post
-     *        path-pattern: '/api/member'
-     *        mask-key:
-     *          - Authorization
-     *          - Postman-Token
-     *      - method: get
-     *        path-pattern: '/api/member/1'
-     *        mask-key:
-     *          - Authorization
-     *          - Postman-Token
+     * <code>
+     *     path-header-masks: <br/>
+     *     &nbsp;&nbsp;- method: post<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern: '/api/member'<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;mask-key:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Authorization<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Postman-Token<br/>
+     *     &nbsp;&nbsp;- method: get<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern: '/api/member/1'<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;mask-key:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Authorization<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Postman-Token
+     * </code>
      * </pre>
      */
     @Nullable
@@ -95,16 +98,18 @@ public class LoggingFilterProperties {
      * <p>
      * The format of the pattern is JsonPath.
      * <pre>
-     *     request-json-body-masks:
-     *      - method: post
-     *        path-pattern: '/api/auth/sign-up'
-     *        mask-json:
-     *          - '$.password'
-     *          - '$.password.&#42;'
-     *      - method: get
-     *        path-pattern: '/api/auth/sign-in'
-     *        mask-json:
-     *          - '$.password'
+     * <code>
+     *     request-json-body-masks:<br/>
+     *     &nbsp;&nbsp;- method: post<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern: '/api/auth/sign-up'<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;mask-json:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '$.password'<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '$.password.&#42;'<br/>
+     *     &nbsp;&nbsp;- method: get<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern: '/api/auth/sign-in'<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;mask-json:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '$.password'
+     * </code>
      * </pre>
      */
     @Nullable
@@ -113,12 +118,14 @@ public class LoggingFilterProperties {
     /**
      * Masks the value corresponding to the name of specified Url.
      * <pre>
-     *     request-form-data-masks:
-     *      - method: post
-     *        path-pattern: '/api/member'
-     *        mask-key:
-     *          - phone
-     *          - name
+     * <code>
+     *     request-form-data-masks:<br/>
+     *     &nbsp;&nbsp;- method: post<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;path-pattern: '/api/member'<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;mask-key:<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- phone<br/>
+     *     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name
+     * </code>
      * </pre>
      */
     @Nullable

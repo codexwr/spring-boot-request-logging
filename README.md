@@ -1,7 +1,7 @@
 [![Release](https://jitpack.io/v/codexwr/spring-boot-request-logging.svg)](https://jitpack.io/#codexwr/spring-boot-request-logging)
 
 # Request Logging Library
-This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet.
+This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet/Reactive(Webflux).
 
 ## Installation
 Add the Jitpack to your build.gradle.kts:
@@ -17,9 +17,24 @@ repositories {
 Add the dependency to your `build.gradle.kts`:
 ```kotlin
 dependencies {
-    implementation("com.github.codexwr:spring-boot-request-logging:1.0.1")
+    implementation("com.github.codexwr:spring-boot-request-logging:2.0.0")
 }
 ```
+- In a Spring Reactive project, if you encounter the following error:
+  ```text
+  java.lang.IllegalStateException: Error processing condition on com.github.codexwr.springbootrequestlogging.configuration.LoggingFilterAutoConfiguration
+  ...
+  ...
+  Caused by: java.lang.ClassNotFoundException: jakarta.servlet.Filter
+  ```
+
+  Please add the following library to your dependencies:
+  ```kotlin
+  dependencies {
+    compileOnly ("jakarta.servlet:jakarta.servlet-api:6.1.0")
+  }
+  ```
+  
 
 ## Properties
 You can adjust settings in `application.yml`.
@@ -30,38 +45,72 @@ codexwr:
     request-logging:
       enabled: true
       filter-order: -101
-      exclude-url-patterns: /set/the/paths/you/want/to/exclude, /exclude/**, /error
-      enter-prefix: '[+] '
-      exit-prefix: '[-] '
+      exclude-logging-paths:
+        - method: post
+          path-patterns:
+            - /api/url/1
+            - /api/url/2
+        - method: get
+          path-patterns: 
+            - /api-docs/**
+            - /swagger/*
       include-query-string: true
       include-client-info: true
-      include-headers: false
-      masking-headers: Authorization, postman-token
-      include-request-payload: false
-      max-request-payload-size: 64
-      masking-request-payload-pattern:
-        - $.set_the_jsonpath_you_want_to_mask
-        - $.name
-        - $..password
-      include-response-payload: false
-      max-response-payload-size: 64
-      masking-response-payload-pattern:
-        - $.set_the_jsonpath_you_want_to_mask
-        - $.*.birthday
+      include-headers: true
+      path-header-mask:
+        - method: post
+          path-pattern: /api/member
+          mask-key:
+            - X-USER-KEY
+            - Postman-Token
+        - method: get
+          path-pattern: /api/member/*
+          mask-key: 
+            - Postman-Token
+      default-header-masks:
+        - Authorization
+      include-request-body: true
+      request-json-body-masks:
+        - method: post
+          path-pattern: /api/auth/**
+          mask-json:
+            - $.password
+            - $.name.*
+        - method: get
+            - $.access-token
+      include-response-body: true
+      response-json-body-masks:
+        - method: post
+          path-pattern: /api/auth/**
+          mask-json:
+            - $.password
+            - $.name.*
+        - method: get
+            - $.access-token
       mask-string: '{{***}}'
+      enter-prefix-decor: '[+] '
+      exit-prefix-decor: '[-] '
+      
+
 ```
-- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `masking-request-payload-pattern` and `masking-response-payload-pattern` pattern.
+- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `request-json-body-masks.mask-json` and `response-json-body-masks.mask-json` pattern.
 
 ## Log Sample
 ```yaml
 include-headers: true
-masking-headers: Authorization, postman-token
-include-request-payload: true
-max-request-payload-size: 512
-masking-request-payload-pattern: $..password
-include-response-payload: true
-max-response-payload-size: 512
-masking-response-payload-pattern: $.userInfo.password
+default-header-masks: Authorization, postman-token
+include-request-body: true
+request-json-body-masks:
+  - method: post
+    path-pattern: /sample
+    mask-json:
+      - $..password
+include-response-body: true
+response-json-body-masks:
+  - method: post
+    path-pattern: /sample
+    mask-json:
+      - $.userInfo.password
 ```
 
 ```http request
