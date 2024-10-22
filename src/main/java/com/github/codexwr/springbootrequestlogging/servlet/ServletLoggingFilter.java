@@ -73,6 +73,8 @@ public class ServletLoggingFilter extends OncePerRequestFilter implements Ordere
     }
 
     private LoggingResponseWrapper ensureLoggingResponse(HttpServletResponse response, LoggingRequestWrapper request) {
+        if (response instanceof LoggingResponseWrapper) return (LoggingResponseWrapper) response;
+
         return new LoggingResponseWrapper(enableLoggingResponseBody ? new CachedResponseWrapper(response) : response, request, logPrinter);
     }
 }
