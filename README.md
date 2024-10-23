@@ -87,7 +87,7 @@ codexwr:
             - $.name.*
         - method: get
             - $.access-token
-      mask-string: '{{***}}'
+      mask-string: '{{MASKED}}'
       enter-prefix-decor: '[+] '
       exit-prefix-decor: '[-] '
       
@@ -135,8 +135,8 @@ Content-Length: 73
 }
 ```
 
-> `2024-04-06T16:05:46.726+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [+] POST /sample?itemName=sample&itemValue=20, client=0:0:0:0:0:0:0:1, headers=[authorization:"{{***}}", user-agent:"PostmanRuntime/7.37.0", accept:"*/*", postman-token:"{{***}}", host:"localhost:8080", accept-encoding:"gzip, deflate, br", connection:"keep-alive", content-length:"73", Content-Type:"application/json;charset=UTF-8"]`
+> `2024-04-06T16:05:46.726+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [+] POST /sample?itemName=sample&itemValue=20, client=0:0:0:0:0:0:0:1, headers=[authorization:"{{MASKED}}", user-agent:"PostmanRuntime/7.37.0", accept:"*/*", postman-token:"{{MASKED}}", host:"localhost:8080", accept-encoding:"gzip, deflate, br", connection:"keep-alive", content-length:"73", Content-Type:"application/json;charset=UTF-8"]`
 > 
-> `2024-04-06T16:05:47.213+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [-] <200 OK:452ms> POST /sample?itemName=sample&itemValue=20, [requestPayload]={"username":"sample-user-name","password":"{{***}}"}, [responsePayload]={"post":"post sample","userInfo":{"username":"sample-user-name","password":"{{***}}"}}`
+> `2024-04-06T16:05:47.213+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [-] <200 OK:452ms> POST /sample?itemName=sample&itemValue=20, [requestPayload]={"username":"sample-user-name","password":"{{MASKED}}"}, [responsePayload]={"post":"post sample","userInfo":{"username":"sample-user-name","password":"{{MASKED}}"}}`
  
 

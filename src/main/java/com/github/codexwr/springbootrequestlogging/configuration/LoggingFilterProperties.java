@@ -147,7 +147,7 @@ public class LoggingFilterProperties {
     /**
      * Text output by masking
      */
-    private String maskString = "{{***}}";
+    private String maskString = "{{MASKED}}";
 
 
     /**
