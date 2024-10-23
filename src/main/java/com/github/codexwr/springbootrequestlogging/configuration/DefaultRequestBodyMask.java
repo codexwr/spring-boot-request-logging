@@ -2,6 +2,7 @@ package com.github.codexwr.springbootrequestlogging.configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.codexwr.springbootrequestlogging.component.RequestBodyMask;
 import jakarta.annotation.Nonnull;
@@ -50,7 +51,13 @@ class DefaultRequestBodyMask extends CommonBodyMask implements RequestBodyMask {
     public String generateJsonMask(@Nonnull HttpMethod method, @Nonnull String path, @Nonnull String requestBody) {
         var patterns = jsonMasks.get(method);
         var masks = getMaskPattern(path, patterns);
-        if (CollectionUtils.isEmpty(masks)) return requestBody;
+        if (CollectionUtils.isEmpty(masks)) {
+            try {
+                return objectMapper.readValue(requestBody, JsonNode.class).toString();
+            } catch (JsonProcessingException e) {
+                return requestBody;
+            }
+        }
 
         return getJsonMaksString(requestBody, masks, maskOverlay);
     }
