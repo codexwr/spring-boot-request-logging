@@ -1,0 +1,52 @@
+codexwr:
+  springboot:
+    request-logging:
+      enabled: true
+      exclude-logging-paths:
+        - method: get
+          path-patterns:
+            - /test/member
+      include-query-string: true
+      include-client-info: true
+      include-headers: true
+      path-header-mask:
+        - method: post
+          path-pattern: /test/member
+          mask-key:
+            - x-mask-item
+      default-header-masks:
+        - x-default-item
+      include-request-body: true
+      request-json-body-masks:
+        - method: post
+          path-pattern: /test/member
+          mask-json:
+            - $.age
+      request-form-data-masks:
+        - method: post
+          path-pattern: /test/member/*/**
+          mask-key:
+            - email
+            - nick
+      include-response-body: true
+      response-json-body-masks:
+        - method: post
+          path-pattern: /**
+          mask-json:
+            - code
+---
+spring:
+  config:
+    activate:
+      on-profile: servlet
+
+  main:
+    web-application-type: servlet
+---
+spring:
+  config:
+    activate:
+      on-profile: reactive
+
+  main:
+    web-application-type: reactive
