@@ -13,8 +13,8 @@ import java.util.Set;
 @Data
 @ConfigurationProperties(prefix = LoggingFilterProperties.PREFIX)
 public class LoggingFilterProperties {
-    static final String PREFIX = "codexwr.springboot.request-logging";
-    static final String ENABLED = PREFIX + ".enabled";
+    public static final String PREFIX = "codexwr.springboot.request-logging";
+    public static final String ENABLED = PREFIX + ".enabled";
 
     /**
      * Enable request logging of client

@@ -1,18 +1,16 @@
 package com.github.codexwr.springbootrequestlogging.reactor;
 
-import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
-import com.github.codexwr.springbootrequestlogging.component.IgnoreLoggingPath;
+import com.github.codexwr.springbootrequestlogging.configuration.IgnoreLoggingPath;
+import com.github.codexwr.springbootrequestlogging.configuration.LogPrinter;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-public class WebfluxLoggingFilter implements WebFilter, Ordered {
+class DefaultReactiveLoggingFilter implements LoggingFilter {
     private final LogPrinter logPrinter;
     private final IgnoreLoggingPath ignoreLoggingPath;
     private final boolean enableLoggingRequestBody;

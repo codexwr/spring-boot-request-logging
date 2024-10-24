@@ -1,12 +1,8 @@
 package com.github.codexwr.springbootrequestlogging.configuration;
 
-import com.github.codexwr.springbootrequestlogging.component.*;
-import com.github.codexwr.springbootrequestlogging.reactor.WebfluxLoggingFilter;
-import com.github.codexwr.springbootrequestlogging.servlet.ServletLoggingFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -48,17 +44,5 @@ class LoggingFilterAutoConfiguration {
     @ConditionalOnMissingBean
     LogPrinter logPrinter(LoggingFilterProperties properties, HttpHeaderMask httpHeaderMask, RequestBodyMask requestBodyMask, ResponseBodyMask responseBodyMask, UsernameProvider usernameProvider) {
         return new DefaultLogPrinter(properties, httpHeaderMask, requestBodyMask, responseBodyMask, usernameProvider);
-    }
-
-    @Bean
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-    WebfluxLoggingFilter webfluxLoggingFilter(LogPrinter logPrinter, IgnoreLoggingPath ignoreLoggingPath, LoggingFilterProperties properties) {
-        return new WebfluxLoggingFilter(logPrinter, ignoreLoggingPath, properties.isIncludeRequestBody(), properties.isIncludeResponseBody(), properties.getFilterOrder());
-    }
-
-    @Bean
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-    ServletLoggingFilter servletLoggingFilter(LogPrinter logPrinter, IgnoreLoggingPath ignoreLoggingPath, LoggingFilterProperties properties) {
-        return new ServletLoggingFilter(logPrinter, ignoreLoggingPath, properties.isIncludeRequestBody(), properties.isIncludeResponseBody(), properties.getFilterOrder());
     }
 }

@@ -1,6 +1,5 @@
 package com.github.codexwr.springbootrequestlogging.configuration;
 
-import com.github.codexwr.springbootrequestlogging.component.IgnoreLoggingPath;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.springframework.http.HttpMethod;

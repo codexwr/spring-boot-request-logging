@@ -1,1 +1,3 @@
 com.github.codexwr.springbootrequestlogging.configuration.LoggingFilterAutoConfiguration
+com.github.codexwr.springbootrequestlogging.servlet.ServletLoggingFilterAutoConfiguration
+com.github.codexwr.springbootrequestlogging.reactor.ReactiveLoggingFilterAutoConfiguration

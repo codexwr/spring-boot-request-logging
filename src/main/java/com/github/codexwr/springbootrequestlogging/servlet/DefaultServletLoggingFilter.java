@@ -1,14 +1,13 @@
 package com.github.codexwr.springbootrequestlogging.servlet;
 
-import com.github.codexwr.springbootrequestlogging.component.IgnoreLoggingPath;
-import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
+import com.github.codexwr.springbootrequestlogging.configuration.IgnoreLoggingPath;
+import com.github.codexwr.springbootrequestlogging.configuration.LogPrinter;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
@@ -16,7 +15,7 @@ import org.springframework.web.util.WebUtils;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class ServletLoggingFilter extends OncePerRequestFilter implements Ordered {
+class DefaultServletLoggingFilter extends OncePerRequestFilter implements LoggingFilter {
     private final LogPrinter logPrinter;
     private final IgnoreLoggingPath ignoreLoggingPath;
     private final boolean enableLoggingRequestBody;

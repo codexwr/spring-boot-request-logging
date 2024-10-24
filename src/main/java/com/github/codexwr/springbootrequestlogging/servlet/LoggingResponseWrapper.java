@@ -1,6 +1,6 @@
 package com.github.codexwr.springbootrequestlogging.servlet;
 
-import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
+import com.github.codexwr.springbootrequestlogging.configuration.LogPrinter;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.springframework.http.HttpStatusCode;

@@ -1,6 +1,6 @@
 package com.github.codexwr.springbootrequestlogging.reactor;
 
-import com.github.codexwr.springbootrequestlogging.component.LogPrinter;
+import com.github.codexwr.springbootrequestlogging.configuration.LogPrinter;
 import jakarta.annotation.Nonnull;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;

@@ -1,6 +1,5 @@
 package com.github.codexwr.springbootrequestlogging.configuration;
 
-import com.github.codexwr.springbootrequestlogging.component.HttpHeaderMask;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,12 +21,12 @@ class DefaultHttpHeaderMaskTest {
         headers.add("X-Request-ID", "As5cm9Dxl8wg9m");
 
         // when
-        var maskHeaders = HttpHeaderMaskSteps.getDefaultHttpHeaderMask()
+        var maskHeaders = HttpHeaderMaskSteps.defaultHttpHeaderMask
                 .getMaskingHeaders(method, path, headers);
 
         // then
         Assertions.assertThat(maskHeaders).hasSize(headers.size())
-                .doesNotContainValue(List.of(HttpHeaderMaskSteps.getMaskOverlay()));
+                .doesNotContainValue(List.of(HttpHeaderMaskSteps.maskOverlay));
     }
 
     @Test
@@ -44,15 +43,15 @@ class DefaultHttpHeaderMaskTest {
         headers.add("Accept-Encoding", "gzip");
         headers.add("Accept-Encoding", "deflate");
 
-        var maskHeaders = HttpHeaderMaskSteps.getDefaultHttpHeaderMask()
+        var maskHeaders = HttpHeaderMaskSteps.defaultHttpHeaderMask
                 .getMaskingHeaders(method, path, headers);
 
         // then
         Assertions.assertThat(maskHeaders).hasSize(headers.size())
                 .hasEntrySatisfying("Authorization", v -> Assertions.assertThat(v).isEqualTo(headers.get("Authorization")))
                 .hasEntrySatisfying("X-Request-ID", v -> Assertions.assertThat(v).isEqualTo(headers.get("X-Request-ID")))
-                .hasEntrySatisfying("Access-Control-Allow-Origin", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()))
-                .hasEntrySatisfying("Accept-Encoding", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()));
+                .hasEntrySatisfying("Access-Control-Allow-Origin", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay))
+                .hasEntrySatisfying("Accept-Encoding", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay));
     }
 
     @Test
@@ -69,15 +68,15 @@ class DefaultHttpHeaderMaskTest {
         headers.add("accept-encoding", "gzip");
         headers.add("accept-encoding", "deflate");
 
-        var maskHeaders = HttpHeaderMaskSteps.getDefaultHttpHeaderMask()
+        var maskHeaders = HttpHeaderMaskSteps.defaultHttpHeaderMask
                 .getMaskingHeaders(method, path, headers);
 
         // then
         Assertions.assertThat(maskHeaders).hasSize(headers.size())
                 .hasEntrySatisfying("authorization", v -> Assertions.assertThat(v).isEqualTo(headers.get("authorization")))
                 .hasEntrySatisfying("x-request-id", v -> Assertions.assertThat(v).isEqualTo(headers.get("X-Request-ID")))
-                .hasEntrySatisfying("ACCESS-CONTROL-ALLOW-ORIGIN", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()))
-                .hasEntrySatisfying("accept-encoding", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()));
+                .hasEntrySatisfying("ACCESS-CONTROL-ALLOW-ORIGIN", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay))
+                .hasEntrySatisfying("accept-encoding", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay));
     }
 
     @Test
@@ -94,12 +93,12 @@ class DefaultHttpHeaderMaskTest {
         headers.add("==Accept-Encoding", "gzip");
         headers.add("==Accept-Encoding", "deflate");
 
-        var maskHeaders = HttpHeaderMaskSteps.getDefaultHttpHeaderMask()
+        var maskHeaders = HttpHeaderMaskSteps.defaultHttpHeaderMask
                 .getMaskingHeaders(method, path, headers);
 
         // then
         Assertions.assertThat(maskHeaders).hasSize(headers.size())
-                .doesNotContainValue(List.of(HttpHeaderMaskSteps.getMaskOverlay()));
+                .doesNotContainValue(List.of(HttpHeaderMaskSteps.maskOverlay));
     }
 
     @Test
@@ -116,15 +115,15 @@ class DefaultHttpHeaderMaskTest {
         headers.add("Accept-Encoding", "gzip");
         headers.add("Accept-Encoding", "deflate");
 
-        var maskHeaders = HttpHeaderMaskSteps.getDefaultHttpHeaderMask()
+        var maskHeaders = HttpHeaderMaskSteps.defaultHttpHeaderMask
                 .getMaskingHeaders(method, path, headers);
 
         // then
         Assertions.assertThat(maskHeaders).hasSize(headers.size())
                 .hasEntrySatisfying("Authorization", v -> Assertions.assertThat(v).isEqualTo(headers.get("Authorization")))
                 .hasEntrySatisfying("Access-Control-Allow-Origin", v -> Assertions.assertThat(v).isEqualTo(headers.get("Access-Control-Allow-Origin")))
-                .hasEntrySatisfying("X-Request-ID", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()))
-                .hasEntrySatisfying("Accept-Encoding", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()));
+                .hasEntrySatisfying("X-Request-ID", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay))
+                .hasEntrySatisfying("Accept-Encoding", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay));
     }
 
     @Test
@@ -141,7 +140,7 @@ class DefaultHttpHeaderMaskTest {
         headers.add("Accept-Encoding", "gzip");
         headers.add("Accept-Encoding", "deflate");
 
-        var maskHeaders = HttpHeaderMaskSteps.getDefaultHttpHeaderMask()
+        var maskHeaders = HttpHeaderMaskSteps.defaultHttpHeaderMask
                 .getMaskingHeaders(method, path, headers);
 
         // then
@@ -149,14 +148,14 @@ class DefaultHttpHeaderMaskTest {
                 .hasEntrySatisfying("Access-Control-Allow-Origin", v -> Assertions.assertThat(v).isEqualTo(headers.get("Access-Control-Allow-Origin")))
                 .hasEntrySatisfying("X-Request-ID", v -> Assertions.assertThat(v).isEqualTo(headers.get("X-Request-ID")))
                 .hasEntrySatisfying("Accept-Encoding", v -> Assertions.assertThat(v).isEqualTo(headers.get("Accept-Encoding")))
-                .hasEntrySatisfying("Authorization", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.getMaskOverlay()));
+                .hasEntrySatisfying("Authorization", v -> Assertions.assertThat(v).containsOnly(HttpHeaderMaskSteps.maskOverlay));
     }
 
 
     public static class HttpHeaderMaskSteps {
-        private static final String maskOverlay = "{{***}}";
-        private static final Set<String> defaultMaskKeys = Set.of("Access-Control-Allow-Origin", "Accept-Encoding");
-        private static final List<LoggingFilterProperties.PathKeyMask> pathMaskKeys = List.of(
+        public static final String maskOverlay = "{{***}}";
+        public static final Set<String> defaultMaskKeys = Set.of("Access-Control-Allow-Origin", "Accept-Encoding");
+        public static final List<LoggingFilterProperties.PathKeyMask> pathMaskKeys = List.of(
                 new LoggingFilterProperties.PathKeyMask(HttpMethod.GET.name(), "/users/**",
                         Set.of("X-Request-ID", "Accept-Encoding")
                 ),
@@ -168,23 +167,7 @@ class DefaultHttpHeaderMaskTest {
                 )
         );
 
-        private static final HttpHeaderMask defaultHttpHeaderMask = new DefaultHttpHeaderMask(maskOverlay, defaultMaskKeys, pathMaskKeys);
-
-        public static String getMaskOverlay() {
-            return maskOverlay;
-        }
-
-        public static Set<String> getDefaultMaskKeys() {
-            return defaultMaskKeys;
-        }
-
-        public static List<LoggingFilterProperties.PathKeyMask> getPathMaskKeys() {
-            return pathMaskKeys;
-        }
-
-        public static HttpHeaderMask getDefaultHttpHeaderMask() {
-            return defaultHttpHeaderMask;
-        }
+        public static final HttpHeaderMask defaultHttpHeaderMask = new DefaultHttpHeaderMask(maskOverlay, defaultMaskKeys, pathMaskKeys);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.github.codexwr.springbootrequestlogging.component;
+package com.github.codexwr.springbootrequestlogging.configuration;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
