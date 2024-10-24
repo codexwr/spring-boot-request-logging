@@ -62,7 +62,7 @@ class DefaultServletLoggingFilter extends OncePerRequestFilter implements Loggin
 
 
     private boolean isIgnoreLogging(HttpServletRequest request) {
-        return ignoreLoggingPath.isMatch(HttpMethod.valueOf(request.getMethod()), request.getServletPath());
+        return ignoreLoggingPath.isMatch(HttpMethod.valueOf(request.getMethod()), request.getRequestURI());
     }
 
     private LoggingRequestWrapper ensureLoggingRequest(HttpServletRequest request) {
