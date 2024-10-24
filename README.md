@@ -1,10 +1,13 @@
 [![Release](https://jitpack.io/v/codexwr/spring-boot-request-logging.svg)](https://jitpack.io/#codexwr/spring-boot-request-logging)
 
 # Request Logging Library
+
 This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet/Reactive(Webflux).
 
 ## Installation
+
 Add the Jitpack to your build.gradle.kts:
+
 ```kotlin
 repositories {
     // Jitpack
@@ -15,28 +18,15 @@ repositories {
 ```
 
 Add the dependency to your `build.gradle.kts`:
+
 ```kotlin
 dependencies {
     implementation("com.github.codexwr:spring-boot-request-logging:2.0.0")
 }
 ```
-- In a Spring Reactive project, if you encounter the following error:
-  ```text
-  java.lang.IllegalStateException: Error processing condition on com.github.codexwr.springbootrequestlogging.configuration.LoggingFilterAutoConfiguration
-  ...
-  ...
-  Caused by: java.lang.ClassNotFoundException: jakarta.servlet.Filter
-  ```
-
-  Please add the following library to your dependencies:
-  ```kotlin
-  dependencies {
-    compileOnly ("jakarta.servlet:jakarta.servlet-api:6.1.0")
-  }
-  ```
-  
 
 ## Properties
+
 You can adjust settings in `application.yml`.
 
 ```yaml
@@ -51,7 +41,7 @@ codexwr:
             - /api/url/1
             - /api/url/2
         - method: get
-          path-patterns: 
+          path-patterns:
             - /api-docs/**
             - /swagger/*
       include-query-string: true
@@ -65,7 +55,7 @@ codexwr:
             - Postman-Token
         - method: get
           path-pattern: /api/member/*
-          mask-key: 
+          mask-key:
             - Postman-Token
       default-header-masks:
         - Authorization
@@ -90,12 +80,15 @@ codexwr:
       mask-string: '{{MASKED}}'
       enter-prefix-decor: '[+] '
       exit-prefix-decor: '[-] '
-      
+
 
 ```
-- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `request-json-body-masks.mask-json` and `response-json-body-masks.mask-json` pattern.
+
+- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `request-json-body-masks.mask-json` and
+  `response-json-body-masks.mask-json` pattern.
 
 ## Log Sample
+
 ```yaml
 include-headers: true
 default-header-masks: Authorization, postman-token
@@ -135,8 +128,9 @@ Content-Length: 73
 }
 ```
 
-> `2024-04-06T16:05:46.726+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [+] POST /sample?itemName=sample&itemValue=20, client=0:0:0:0:0:0:0:1, headers=[authorization:"{{MASKED}}", user-agent:"PostmanRuntime/7.37.0", accept:"*/*", postman-token:"{{MASKED}}", host:"localhost:8080", accept-encoding:"gzip, deflate, br", connection:"keep-alive", content-length:"73", Content-Type:"application/json;charset=UTF-8"]`
-> 
-> `2024-04-06T16:05:47.213+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [-] <200 OK:452ms> POST /sample?itemName=sample&itemValue=20, [requestPayload]={"username":"sample-user-name","password":"{{MASKED}}"}, [responsePayload]={"post":"post sample","userInfo":{"username":"sample-user-name","password":"{{MASKED}}"}}`
+>
+`2024-04-06T16:05:46.726+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [+] POST /sample?itemName=sample&itemValue=20, client=0:0:0:0:0:0:0:1, headers=[authorization:"{{MASKED}}", user-agent:"PostmanRuntime/7.37.0", accept:"*/*", postman-token:"{{MASKED}}", host:"localhost:8080", accept-encoding:"gzip, deflate, br", connection:"keep-alive", content-length:"73", Content-Type:"application/json;charset=UTF-8"]`
+>
+`2024-04-06T16:05:47.213+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [-] <200 OK:452ms> POST /sample?itemName=sample&itemValue=20, requestBody={"username":"sample-user-name","password":"{{MASKED}}"}, responseBody={"post":"post sample","userInfo":{"username":"sample-user-name","password":"{{MASKED}}"}}`
  
 
