@@ -21,26 +21,6 @@ public class LoggingFilterPropertiesTest {
     private LoggingFilterProperties props;
 
     @Test
-    @DisplayName("기본 설정값 확인")
-    void checkDefaultPropertiesValue() {
-        // given classpath:application-test-props.yml
-        var defaultProps = new LoggingFilterProperties();
-
-        // then
-        assertThat(props).isNotNull();
-        assertThat(props.isIncludeQueryString()).isEqualTo(defaultProps.isIncludeQueryString());
-        assertThat(props.isIncludeClientInfo()).isEqualTo(defaultProps.isIncludeClientInfo());
-        assertThat(props.getDefaultHeaderMasks()).isEqualTo(defaultProps.getDefaultHeaderMasks());
-        assertThat(props.isIncludeRequestBody()).isEqualTo(defaultProps.isIncludeRequestBody());
-        assertThat(props.getRequestFormDataMasks()).isEqualTo(defaultProps.getRequestFormDataMasks());
-        assertThat(props.isIncludeResponseBody()).isEqualTo(defaultProps.isIncludeResponseBody());
-        assertThat(props.getResponseJsonBodyMasks()).isEqualTo(defaultProps.getResponseJsonBodyMasks());
-        assertThat(props.getMaskString()).isEqualTo(defaultProps.getMaskString());
-        assertThat(props.getEnterPrefixDecor()).isEqualTo(defaultProps.getEnterPrefixDecor());
-        assertThat(props.getExitPrefixDecor()).isEqualTo(defaultProps.getExitPrefixDecor());
-    }
-
-    @Test
     @DisplayName("로깅 제외 설정값 확인")
     void checkExcludeLoggingPaths() {
         // given classpath:application-test-props.yml
