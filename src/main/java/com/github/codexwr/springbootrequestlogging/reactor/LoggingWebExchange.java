@@ -20,11 +20,11 @@ class LoggingWebExchange extends ServerWebExchangeDecorator {
         var res = super.getResponse();
 
         // cached
-        if (isCachedRequest) req = new CachedRequestDecorator(req);
+        if (isCachedRequest) req = new CachedRequestDecorator(req, this::getDelegate);
         if (isCachedResponse) res = new CachedResponseDecorator(res);
 
         // logger
-        loggingRequestDecorator = new LoggingRequestDecorator(req, this, logPrinter);
+        loggingRequestDecorator = new LoggingRequestDecorator(req, this::getDelegate, logPrinter);
         loggingResponseDecorator = new LoggingResponseDecorator(res, loggingRequestDecorator, logPrinter);
     }
 

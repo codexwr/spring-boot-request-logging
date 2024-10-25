@@ -1,22 +1,40 @@
 package com.github.codexwr.springbootrequestlogging.reactor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.codec.multipart.FormFieldPart;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Supplier;
 
 class CachedRequestDecorator extends ServerHttpRequestDecorator implements LoggingDecorator {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final Supplier<ServerWebExchange> exchangeSupplier;
     private byte[] cachedBody = null;
 
-    public CachedRequestDecorator(ServerHttpRequest delegate) {
+    public CachedRequestDecorator(ServerHttpRequest delegate, Supplier<ServerWebExchange> exchangeSupplier) {
         super(delegate);
+        this.exchangeSupplier = exchangeSupplier;
     }
 
     @Override
@@ -44,8 +62,61 @@ class CachedRequestDecorator extends ServerHttpRequestDecorator implements Loggi
                 });
     }
 
+    private Mono<byte[]> getInputContent() {
+        if (isCompatibleMediaType(MediaType.APPLICATION_FORM_URLENCODED))
+            return getFormDataContent();
+
+        if (isCompatibleMediaType(MediaType.MULTIPART_FORM_DATA))
+            return getMultipartDataContent();
+
+        return Mono.empty();
+    }
+
+    private Mono<byte[]> getFormDataContent() {
+        var exchange = exchangeSupplier.get();
+
+        return exchange.getFormData()
+                .mapNotNull(this::serializedMultiValueMap);
+    }
+
+    private Mono<byte[]> getMultipartDataContent() {
+        var exchange = exchangeSupplier.get();
+
+        return exchange.getMultipartData()
+                .map(this::extractMultipartData)
+                .mapNotNull(this::serializedMultiValueMap);
+    }
+
+    @Nullable
+    private byte[] serializedMultiValueMap(MultiValueMap<String, String> multiValueMap) {
+        try {
+            return objectMapper.writeValueAsString(multiValueMap).getBytes(getCharset());
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    private MultiValueMap<String, String> extractMultipartData(MultiValueMap<String, Part> partMap) {
+        var partList = partMap.values().stream()
+                .flatMap(Collection::stream)
+                .toList();
+
+        var contents = new HashMap<String, List<String>>();
+        partList.forEach(part -> {
+            if (part instanceof FilePart filePart) {
+                contents.computeIfAbsent(filePart.name(), k -> new ArrayList<>())
+                        .add(filePart.filename());
+            } else if (part instanceof FormFieldPart formFieldPart) {
+                contents.computeIfAbsent(formFieldPart.name(), k -> new ArrayList<>())
+                        .add(formFieldPart.value());
+            }
+        });
+
+        return CollectionUtils.toMultiValueMap(contents);
+    }
+
     public Mono<byte[]> getCachedContentBody() {
-        if (!isCachedBody()) return Mono.empty();
+        if (!isCachedBody()) return getInputContent();
 
         return Mono.justOrEmpty(cachedBody)
                 .switchIfEmpty(storeCachedBody(super.getBody()));

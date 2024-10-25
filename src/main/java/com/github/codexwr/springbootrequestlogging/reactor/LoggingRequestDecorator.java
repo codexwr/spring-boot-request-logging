@@ -8,23 +8,25 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 class LoggingRequestDecorator extends ServerHttpRequestDecorator implements LoggingDecorator {
-    private final ServerWebExchange exchange;
+    private final Supplier<ServerWebExchange> exchangeSupplier;
     private final LogPrinter logPrinter;
 
     @Getter
     private Long executionTime = System.currentTimeMillis();
 
-    public LoggingRequestDecorator(ServerHttpRequest delegate, ServerWebExchange exchange, LogPrinter logPrinter) {
+    public LoggingRequestDecorator(ServerHttpRequest delegate, Supplier<ServerWebExchange> exchangeSupplier, LogPrinter logPrinter) {
         super(delegate);
 
-        this.exchange = exchange;
+        this.exchangeSupplier = exchangeSupplier;
         this.logPrinter = logPrinter;
     }
 
     public Mono<Void> logPrint() {
         executionTime = System.currentTimeMillis();
+        var exchange = exchangeSupplier.get();
 
         return Mono.zip(exchange.getSession(), getRequestBody())
                 .doOnNext(sessionAndBody -> logPrinter.request(getMethod(),

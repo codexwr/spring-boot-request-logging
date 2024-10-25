@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 @SpringBootApplication
 @RestController
@@ -47,16 +48,16 @@ public class WebTestApplication {
     }
 
     @PostMapping(value = "/member/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDto> createAvatar(@PathVariable int id, MultipartMemberAvatar member) {
-        log.info("create avatar: {}", member);
+    public ResponseEntity<ResponseDto> createAvatar(@PathVariable int id, MultipartMemberAvatar avatar) {
+        log.info("create avatar: {}", avatar);
 
         return ResponseEntity.ok(new ResponseDto(200, "OK"));
     }
 
     @PostMapping(value = "/member/{id}/avatar/async", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDto> createAvatarAsync(@PathVariable int id, MultipartMemberAvatarAsync member) {
-        log.info("create avatar async: {}", member);
+    public Mono<ResponseEntity<ResponseDto>> createAvatarAsync(@PathVariable int id, MultipartMemberAvatarAsync avatar) {
+        log.info("create avatar async: {}", avatar);
 
-        return ResponseEntity.ok(new ResponseDto(200, "OK"));
+        return Mono.just(ResponseEntity.ok(new ResponseDto(200, "OK")));
     }
 }
