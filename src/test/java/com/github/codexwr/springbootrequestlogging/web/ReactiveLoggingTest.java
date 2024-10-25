@@ -109,7 +109,9 @@ public class ReactiveLoggingTest {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("avatar", fileResource, MediaType.IMAGE_JPEG).filename("unsplash.jpg");
         builder.part("color", "red");
+        builder.part("color", "blue");
         builder.part("nick", "engine");
+        builder.part("nick", "engine2");
 
         // when
         webClient.post()

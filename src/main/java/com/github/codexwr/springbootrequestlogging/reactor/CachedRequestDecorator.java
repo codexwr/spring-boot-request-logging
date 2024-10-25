@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -20,13 +22,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
 class CachedRequestDecorator extends ServerHttpRequestDecorator implements LoggingDecorator {
+    private static final Logger log = LoggerFactory.getLogger(CachedRequestDecorator.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Supplier<ServerWebExchange> exchangeSupplier;
@@ -92,6 +94,7 @@ class CachedRequestDecorator extends ServerHttpRequestDecorator implements Loggi
         try {
             return objectMapper.writeValueAsString(multiValueMap).getBytes(getCharset());
         } catch (JsonProcessingException e) {
+            log.trace("Failed to serialize multiValueMap", e);
             return null;
         }
     }
@@ -101,18 +104,16 @@ class CachedRequestDecorator extends ServerHttpRequestDecorator implements Loggi
                 .flatMap(Collection::stream)
                 .toList();
 
-        var contents = new HashMap<String, List<String>>();
+        var contents = CollectionUtils.toMultiValueMap(new HashMap<String, List<String>>());
         partList.forEach(part -> {
             if (part instanceof FilePart filePart) {
-                contents.computeIfAbsent(filePart.name(), k -> new ArrayList<>())
-                        .add(filePart.filename());
+                contents.add(filePart.name(), filePart.filename());
             } else if (part instanceof FormFieldPart formFieldPart) {
-                contents.computeIfAbsent(formFieldPart.name(), k -> new ArrayList<>())
-                        .add(formFieldPart.value());
+                contents.add(formFieldPart.name(), formFieldPart.value());
             }
         });
 
-        return CollectionUtils.toMultiValueMap(contents);
+        return contents;
     }
 
     public Mono<byte[]> getCachedContentBody() {
