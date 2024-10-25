@@ -90,47 +90,63 @@ codexwr:
 ## Log Sample
 
 ```yaml
-include-headers: true
-default-header-masks: Authorization, postman-token
-include-request-body: true
-request-json-body-masks:
-  - method: post
-    path-pattern: /sample
-    mask-json:
-      - $..password
-include-response-body: true
-response-json-body-masks:
-  - method: post
-    path-pattern: /sample
-    mask-json:
-      - $.userInfo.password
+codexwr:
+  springboot:
+    request-logging:
+      enabled: true
+      exclude-logging-paths:
+        - method: get
+          path-patterns:
+            - /test/member
+      include-query-string: true
+      include-client-info: true
+      include-headers: true
+      path-header-mask:
+        - method: post
+          path-pattern: /test/member
+          mask-key:
+            - x-mask-item
+      default-header-masks:
+        - x-default-item
+      include-request-body: true
+      request-json-body-masks:
+        - method: post
+          path-pattern: /test/member
+          mask-json:
+            - $.age
+      request-form-data-masks:
+        - method: post
+          path-pattern: /test/member/*/**
+          mask-key:
+            - email
+            - nick
+      include-response-body: true
+      response-json-body-masks:
+        - method: post
+          path-pattern: /**
+          mask-json:
+            - code
 ```
 
 ```http request
-POST /sample?itemName=sample&itemValue=20 HTTP/1.1
-Host: localhost:8080
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJteSI6Im5hbWUifQ.FJguyRm0oWUX8Vheem-CVsnZyW58kGJEHX41GXFwFEs
-Content-Length: 73
+MockHttpServletRequest:
+        HTTP Method = POST
+        Request URI = /test/member
+        Parameters = {}
+        Headers = [Content-Type:"application/json;charset=UTF-8", x-mask-item:"맴버 생성에서 마스크 됨", X-DEFAULT-ITEM:"기본 마스크 됨", Content-Length:"25"]
+        Body = {"name":"Alice","age":20}
+        Session Attrs = {}
 
-{
-    "username": "sample-user-name",
-    "password": "sample-password"
-}
-
-===[Response]===
-{
-    "post": "post sample",
-    "userInfo": {
-        "username": "sample-user-name",
-        "password": "sample-password"
-    }
-}
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = {"code":200,"message":"OK"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
 ```
 
->
-`2024-04-06T16:05:46.726+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [+] POST /sample?itemName=sample&itemValue=20, client=0:0:0:0:0:0:0:1, headers=[authorization:"{{MASKED}}", user-agent:"PostmanRuntime/7.37.0", accept:"*/*", postman-token:"{{MASKED}}", host:"localhost:8080", accept-encoding:"gzip, deflate, br", connection:"keep-alive", content-length:"73", Content-Type:"application/json;charset=UTF-8"]`
->
-`2024-04-06T16:05:47.213+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [-] <200 OK:452ms> POST /sample?itemName=sample&itemValue=20, requestBody={"username":"sample-user-name","password":"{{MASKED}}"}, responseBody={"post":"post sample","userInfo":{"username":"sample-user-name","password":"{{MASKED}}"}}`
- 
-
+> 2024-10-25T11:20:55.596+09:00  INFO 7262 --- [    Test worker] LogPrinter                               : [+] POST /test/member, ip=127.0.0.1, headers=[Content-Type:"application/json;charset=UTF-8", x-mask-item:"{{MASKED}}", X-DEFAULT-ITEM:"기본 마스크 됨", Content-Length:"25"]  
+> 2024-10-25T11:20:55.658+09:00  INFO 7262 --- [    Test worker] LogPrinter                               : [-] <200 OK:50ms> POST /test/member, requestBody={"name":"Alice","age":"{{MASKED}}"}, responseBody={"code":"{{MASKED}}","message":"OK"}
