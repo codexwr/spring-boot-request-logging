@@ -24,7 +24,6 @@ import reactor.core.publisher.Mono;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Supplier;
 
 class CachedRequestDecorator extends ServerHttpRequestDecorator implements LoggingDecorator {
@@ -104,7 +103,7 @@ class CachedRequestDecorator extends ServerHttpRequestDecorator implements Loggi
                 .flatMap(Collection::stream)
                 .toList();
 
-        var contents = CollectionUtils.toMultiValueMap(new HashMap<String, List<String>>());
+        var contents = CollectionUtils.<String, String>toMultiValueMap(new HashMap<>());
         partList.forEach(part -> {
             if (part instanceof FilePart filePart) {
                 contents.add(filePart.name(), filePart.filename());
