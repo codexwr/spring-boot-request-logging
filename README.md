@@ -1,10 +1,13 @@
 [![Release](https://jitpack.io/v/codexwr/spring-boot-request-logging.svg)](https://jitpack.io/#codexwr/spring-boot-request-logging)
 
 # Request Logging Library
-This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet.
+
+This is a library for logging client requests of Restful APIs in Spring Boot 3.x.x Web Servlet/Reactive(Webflux).
 
 ## Installation
+
 Add the Jitpack to your build.gradle.kts:
+
 ```kotlin
 repositories {
     // Jitpack
@@ -15,13 +18,15 @@ repositories {
 ```
 
 Add the dependency to your `build.gradle.kts`:
+
 ```kotlin
 dependencies {
-    implementation("com.github.codexwr:spring-boot-request-logging:1.0.1")
+    implementation("com.github.codexwr:spring-boot-request-logging:2.0.0")
 }
 ```
 
 ## Properties
+
 You can adjust settings in `application.yml`.
 
 ```yaml
@@ -30,64 +35,118 @@ codexwr:
     request-logging:
       enabled: true
       filter-order: -101
-      exclude-url-patterns: /set/the/paths/you/want/to/exclude, /exclude/**, /error
-      enter-prefix: '[+] '
-      exit-prefix: '[-] '
+      exclude-logging-paths:
+        - method: post
+          path-patterns:
+            - /api/url/1
+            - /api/url/2
+        - method: get
+          path-patterns:
+            - /api-docs/**
+            - /swagger/*
       include-query-string: true
       include-client-info: true
-      include-headers: false
-      masking-headers: Authorization, postman-token
-      include-request-payload: false
-      max-request-payload-size: 64
-      masking-request-payload-pattern:
-        - $.set_the_jsonpath_you_want_to_mask
-        - $.name
-        - $..password
-      include-response-payload: false
-      max-response-payload-size: 64
-      masking-response-payload-pattern:
-        - $.set_the_jsonpath_you_want_to_mask
-        - $.*.birthday
-      mask-string: '{{***}}'
+      include-headers: true
+      path-header-mask:
+        - method: post
+          path-pattern: /api/member
+          mask-key:
+            - X-USER-KEY
+            - Postman-Token
+        - method: get
+          path-pattern: /api/member/*
+          mask-key:
+            - Postman-Token
+      default-header-masks:
+        - Authorization
+      include-request-body: true
+      request-json-body-masks:
+        - method: post
+          path-pattern: /api/auth/**
+          mask-json:
+            - $.password
+            - $.name.*
+        - method: get
+            - $.access-token
+      include-response-body: true
+      response-json-body-masks:
+        - method: post
+          path-pattern: /api/auth/**
+          mask-json:
+            - $.password
+            - $.name.*
+        - method: get
+            - $.access-token
+      mask-string: '{{MASKED}}'
+      enter-prefix-decor: '[+] '
+      exit-prefix-decor: '[-] '
+
+
 ```
-- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `masking-request-payload-pattern` and `masking-response-payload-pattern` pattern.
+
+- Refer to [JsonPath](https://github.com/json-path/JsonPath) for `request-json-body-masks.mask-json` and
+  `response-json-body-masks.mask-json` pattern.
 
 ## Log Sample
+
 ```yaml
-include-headers: true
-masking-headers: Authorization, postman-token
-include-request-payload: true
-max-request-payload-size: 512
-masking-request-payload-pattern: $..password
-include-response-payload: true
-max-response-payload-size: 512
-masking-response-payload-pattern: $.userInfo.password
+codexwr:
+  springboot:
+    request-logging:
+      enabled: true
+      exclude-logging-paths:
+        - method: get
+          path-patterns:
+            - /test/member
+      include-query-string: true
+      include-client-info: true
+      include-headers: true
+      path-header-mask:
+        - method: post
+          path-pattern: /test/member
+          mask-key:
+            - x-mask-item
+      default-header-masks:
+        - x-default-item
+      include-request-body: true
+      request-json-body-masks:
+        - method: post
+          path-pattern: /test/member
+          mask-json:
+            - $.age
+      request-form-data-masks:
+        - method: post
+          path-pattern: /test/member/*/**
+          mask-key:
+            - email
+            - nick
+      include-response-body: true
+      response-json-body-masks:
+        - method: post
+          path-pattern: /**
+          mask-json:
+            - code
 ```
 
 ```http request
-POST /sample?itemName=sample&itemValue=20 HTTP/1.1
-Host: localhost:8080
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJteSI6Im5hbWUifQ.FJguyRm0oWUX8Vheem-CVsnZyW58kGJEHX41GXFwFEs
-Content-Length: 73
+MockHttpServletRequest:
+        HTTP Method = POST
+        Request URI = /test/member
+        Parameters = {}
+        Headers = [Content-Type:"application/json;charset=UTF-8", x-mask-item:"맴버 생성에서 마스크 됨", X-DEFAULT-ITEM:"기본 마스크 됨", Content-Length:"25"]
+        Body = {"name":"Alice","age":20}
+        Session Attrs = {}
 
-{
-    "username": "sample-user-name",
-    "password": "sample-password"
-}
-
-===[Response]===
-{
-    "post": "post sample",
-    "userInfo": {
-        "username": "sample-user-name",
-        "password": "sample-password"
-    }
-}
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:"application/json"]
+     Content type = application/json
+             Body = {"code":200,"message":"OK"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
 ```
 
-> `2024-04-06T16:05:46.726+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [+] POST /sample?itemName=sample&itemValue=20, client=0:0:0:0:0:0:0:1, headers=[authorization:"{{***}}", user-agent:"PostmanRuntime/7.37.0", accept:"*/*", postman-token:"{{***}}", host:"localhost:8080", accept-encoding:"gzip, deflate, br", connection:"keep-alive", content-length:"73", Content-Type:"application/json;charset=UTF-8"]`
-> 
-> `2024-04-06T16:05:47.213+09:00  INFO 36822 --- [nio-8080-exec-1] c.g.c.s.RequestLoggingFilter             : [-] <200 OK:452ms> POST /sample?itemName=sample&itemValue=20, [requestPayload]={"username":"sample-user-name","password":"{{***}}"}, [responsePayload]={"post":"post sample","userInfo":{"username":"sample-user-name","password":"{{***}}"}}`
- 
-
+> 2024-10-25T11:20:55.596+09:00  INFO 7262 --- [    Test worker] LogPrinter                               : [+] POST /test/member, ip=127.0.0.1, headers=[Content-Type:"application/json;charset=UTF-8", x-mask-item:"{{MASKED}}", X-DEFAULT-ITEM:"기본 마스크 됨", Content-Length:"25"]  
+> 2024-10-25T11:20:55.658+09:00  INFO 7262 --- [    Test worker] LogPrinter                               : [-] <200 OK:50ms> POST /test/member, requestBody={"name":"Alice","age":"{{MASKED}}"}, responseBody={"code":"{{MASKED}}","message":"OK"}

@@ -1,0 +1,29 @@
+codexwr:
+  springboot:
+    request-logging:
+      enabled: off
+      filter-order: -123
+      exclude-logging-paths:
+        - method: post
+          path-patterns:
+            - /api/url/1
+            - /api/url/2
+        - method: get
+          path-patterns: /api-docs/**, /swagger/*
+      include-headers: on
+      path-header-mask:
+        - method: post
+          path-pattern: /api/member
+          mask-key:
+            - Authorization
+            - Postman-Token
+        - method: get
+          path-pattern: /api/member/*
+          mask-key: Authorization, Postman-Token
+      request-json-body-masks:
+        - method: post
+          path-pattern: /api/auth/**
+          mask-json:
+            - $.password
+            - $.name.*
+        - method: get
