@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.codexwr"
-version = "2.0.0-SNAPSHOT"
+version = "2.0.0"
 
 java {
     toolchain {

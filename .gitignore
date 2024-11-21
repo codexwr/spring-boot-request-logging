@@ -37,4 +37,5 @@ out/
 .vscode/
 
 ### Custom ###
+.DS_Store
 **/src/test/**/LocalTest.java
