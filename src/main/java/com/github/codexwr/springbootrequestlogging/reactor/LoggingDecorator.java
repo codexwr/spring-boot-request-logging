@@ -10,6 +10,7 @@ import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.web.util.WebUtils;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 interface LoggingDecorator {
     default boolean isCompatibleMediaType(MediaType mediaType) {
@@ -22,7 +23,7 @@ interface LoggingDecorator {
 
         Charset charset = contentType != null ? contentType.getCharset() : null;
 
-        return charset != null ? charset : Charset.forName(WebUtils.DEFAULT_CHARACTER_ENCODING);
+        return charset != null ? charset : StandardCharsets.UTF_8;
     }
 
     default MediaType getContentType() {

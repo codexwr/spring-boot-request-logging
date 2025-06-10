@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.util.WebUtils;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 interface LoggingWrapper {
     Logger log = LoggerFactory.getLogger(LoggingWrapper.class);
@@ -32,7 +33,7 @@ interface LoggingWrapper {
             log.trace("charset parsing error.", e);
         }
 
-        return charset != null ? charset : Charset.forName(WebUtils.DEFAULT_CHARACTER_ENCODING);
+        return charset != null ? charset : StandardCharsets.UTF_8;
     }
 
     String getContentType();
