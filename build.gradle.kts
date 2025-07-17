@@ -3,13 +3,13 @@ import groovy.util.NodeList
 
 plugins {
     java
-    id("org.springframework.boot") version "3.3.4"
+    id("org.springframework.boot") version "3.3.13"
     id("io.spring.dependency-management") version "1.1.6"
     `maven-publish`
 }
 
 group = "com.github.codexwr"
-version = "2.0.1"
+version = "2.0.2"
 
 java {
     toolchain {
