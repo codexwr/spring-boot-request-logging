@@ -14,7 +14,8 @@ class CachedInputStream extends ServletInputStream {
     private boolean isFinished = false;
 
     public CachedInputStream(ServletInputStream inputStream) throws IOException {
-        this.cachedBuffer = new FastByteArrayOutputStream(inputStream.available());
+        int initialCapacity = Math.max(512, inputStream.available());
+        this.cachedBuffer = new FastByteArrayOutputStream(initialCapacity);
         cachedBuffer.write(inputStream.readAllBytes());
         this.inputStream = cachedBuffer.getInputStream();
     }
