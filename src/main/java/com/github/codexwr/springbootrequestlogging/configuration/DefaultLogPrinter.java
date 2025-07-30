@@ -39,6 +39,7 @@ class DefaultLogPrinter implements LogPrinter {
 
         assembleUrl(msg, httpMethod, url, queryString);
         assembleClientInfo(msg, remoteAddr, sessionId);
+        assembleUsername(msg);
         assembleHeader(msg, httpMethod, url, header);
 
         logger.info(msg.toString());
@@ -56,7 +57,6 @@ class DefaultLogPrinter implements LogPrinter {
 
         assembleResponseInfo(msg, executionTime, httpStatus);
         assembleUrl(msg, httpMethod, url, queryString);
-        assembleUsername(msg);
         assembleRequestBody(msg, httpMethod, url, requestBodyContentType, requestBody);
         assembleResponseBody(msg, httpMethod, url, responseBodyContentType, responseBody);
 
