@@ -27,8 +27,7 @@ class CachedRequestWrapper extends HttpServletRequestWrapper implements LoggingW
     private static final Logger log = LoggerFactory.getLogger(CachedRequestWrapper.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private CachedInputStream cachedInputStream = null;
-    private BufferedReader bufferedReader = null;
+    private volatile byte[] cachedData;
 
     public CachedRequestWrapper(HttpServletRequest request) {
         super(request);
@@ -42,25 +41,23 @@ class CachedRequestWrapper extends HttpServletRequestWrapper implements LoggingW
         return getCachedInputStream();
     }
 
+    private CachedInputStream getCachedInputStream() throws IOException {
+        if (cachedData == null) {
+            synchronized (this) {
+                if (cachedData == null)
+                    cachedData = super.getInputStream().readAllBytes();
+            }
+        }
+
+        return new CachedInputStream(cachedData);
+    }
+
     @Override
     public BufferedReader getReader() throws IOException {
         if (!isCachedBody())
             return super.getReader();
 
-        if (bufferedReader == null) {
-            bufferedReader = new BufferedReader(new InputStreamReader(getInputStream()));
-        }
-
-        return bufferedReader;
-    }
-
-    private CachedInputStream getCachedInputStream() throws IOException {
-        if (cachedInputStream != null)
-            return cachedInputStream;
-
-        cachedInputStream = new CachedInputStream(super.getInputStream());
-
-        return cachedInputStream;
+        return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -134,7 +131,7 @@ class CachedRequestWrapper extends HttpServletRequestWrapper implements LoggingW
             if (!isCachedBody())
                 return getInputContent();
 
-            return getCachedInputStream().getCachedBuffer();
+            return cachedData;
         } catch (Exception e) {
             log.trace("Failed to get cached content body", e);
             return null;

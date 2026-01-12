@@ -24,14 +24,6 @@ class CachedResponseWrapper extends HttpServletResponseWrapper implements Loggin
         return getCachedOutputStream();
     }
 
-    @Override
-    public PrintWriter getWriter() throws IOException {
-        if (!isCachedBody())
-            return super.getWriter();
-
-        return getPrintWriterWrapper();
-    }
-
     private ServletOutputStream getCachedOutputStream() throws IOException {
         if (cachedOutputStream != null)
             return cachedOutputStream;
@@ -39,6 +31,14 @@ class CachedResponseWrapper extends HttpServletResponseWrapper implements Loggin
         cachedOutputStream = new CachedOutputStream(super.getOutputStream());
 
         return cachedOutputStream;
+    }
+
+    @Override
+    public PrintWriter getWriter() throws IOException {
+        if (!isCachedBody())
+            return super.getWriter();
+
+        return getPrintWriterWrapper();
     }
 
     private PrintWriterWrapper getPrintWriterWrapper() throws IOException {

@@ -21,7 +21,7 @@ Add the dependency to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.codexwr:spring-boot-request-logging:2.0.3")
+    implementation("com.github.codexwr:spring-boot-request-logging:2.0.4")
 }
 ```
 
