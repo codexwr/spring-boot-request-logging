@@ -1,23 +1,18 @@
 package com.github.codexwr.springbootrequestlogging.servlet;
 
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
-import org.springframework.util.FastByteArrayOutputStream;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 class CachedInputStream extends ServletInputStream {
-    private final FastByteArrayOutputStream cachedBuffer;
-    private final InputStream inputStream;
-
+    private final ByteArrayInputStream buffer;
     private boolean isFinished = false;
 
-    public CachedInputStream(ServletInputStream inputStream) throws IOException {
-        int initialCapacity = Math.max(512, inputStream.available());
-        this.cachedBuffer = new FastByteArrayOutputStream(initialCapacity);
-        cachedBuffer.write(inputStream.readAllBytes());
-        this.inputStream = cachedBuffer.getInputStream();
+    public CachedInputStream(byte[] data) {
+        this.buffer = new ByteArrayInputStream(data);
     }
 
     @Override
@@ -27,15 +22,13 @@ class CachedInputStream extends ServletInputStream {
 
     @Override
     public boolean isReady() {
-        return inputStream != null;
+        return true;
     }
 
     @Override
     public void close() throws IOException {
+        buffer.close();
         super.close();
-
-        if (inputStream != null) inputStream.close();
-        if (cachedBuffer != null) cachedBuffer.close();
     }
 
     @Override
@@ -44,13 +37,16 @@ class CachedInputStream extends ServletInputStream {
     }
 
     @Override
-    public int read() throws IOException {
-        var data = inputStream.read();
-        if (data != -1) isFinished = true;
-        return data;
+    public int read() {
+        var count = buffer.read();
+        if (count == -1) isFinished = true;
+        return count;
     }
 
-    public byte[] getCachedBuffer() {
-        return cachedBuffer.toByteArray();
+    @Override
+    public int read(@Nonnull byte[] b, int off, int len) {
+        var count = buffer.read(b, off, len);
+        if (count == -1) isFinished = true;
+        return count;
     }
 }
