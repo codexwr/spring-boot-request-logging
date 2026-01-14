@@ -15,10 +15,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -131,9 +128,11 @@ class CachedRequestWrapper extends HttpServletRequestWrapper implements LoggingW
             if (!isCachedBody())
                 return getInputContent();
 
-            return cachedData;
+            try(InputStream is = getCachedInputStream()) {
+                return is.readAllBytes();
+            }
         } catch (Exception e) {
-            log.trace("Failed to get cached content body", e);
+            log.trace("Failed to get cached request content body", e);
             return null;
         }
     }

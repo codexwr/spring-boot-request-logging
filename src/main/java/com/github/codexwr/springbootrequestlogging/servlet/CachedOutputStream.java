@@ -32,10 +32,10 @@ class CachedOutputStream extends ServletOutputStream {
 
     @Override
     public void close() throws IOException {
-        super.close();
-
         outputStream.close();
         cachedBuffer.close();
+
+        super.close();
     }
 
     public byte[] getCachedBuffer() {
