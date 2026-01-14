@@ -19,15 +19,10 @@ class LoggingResponseWrapper extends HttpServletResponseWrapper implements Loggi
     }
 
     public void logPrint() {
-        logPrinter.response(executionTime(),
+        logPrinter.response(
+                executionTime(),
                 HttpStatusCode.valueOf(getStatus()),
-                loggingRequestWrapper.getHttpMethod(),
-                loggingRequestWrapper.getRequestURI(),
-                loggingRequestWrapper.getQueryString(),
-                getContentType(loggingRequestWrapper.getContentType()),
-                loggingRequestWrapper.getRequestBody(),
-                getContentType(getContentType()),
-                getResponseBody()
+                getLogItem(loggingRequestWrapper, this, null)
         );
     }
 

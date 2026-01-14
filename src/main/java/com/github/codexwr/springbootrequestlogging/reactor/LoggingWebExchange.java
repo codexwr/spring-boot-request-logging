@@ -25,7 +25,7 @@ class LoggingWebExchange extends ServerWebExchangeDecorator {
 
         // logger
         loggingRequestDecorator = new LoggingRequestDecorator(req, this::getDelegate, logPrinter);
-        loggingResponseDecorator = new LoggingResponseDecorator(res, loggingRequestDecorator, logPrinter);
+        loggingResponseDecorator = new LoggingResponseDecorator(res, this::getDelegate, loggingRequestDecorator, logPrinter);
     }
 
     @Override
