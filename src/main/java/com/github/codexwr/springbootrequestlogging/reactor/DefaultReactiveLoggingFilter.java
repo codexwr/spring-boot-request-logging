@@ -28,9 +28,10 @@ class DefaultReactiveLoggingFilter implements LoggingFilter {
         if (isIgnoreLogging(exchange.getRequest()))
             return chain.filter(exchange);
 
-        return new LoggingWebExchange(exchange, logPrinter, enableLoggingRequestBody, enableLoggingResponseBody)
+        LoggingWebExchange webExchange = new LoggingWebExchange(exchange, logPrinter, enableLoggingRequestBody, enableLoggingResponseBody);
+        return webExchange
                 .enableLogging()
-                .flatMap(chain::filter);
+                .flatMap(it -> chain.filter(it).onErrorResume(webExchange::enableResponseLoggingWhenError));
     }
 
     private boolean isIgnoreLogging(ServerHttpRequest request) {

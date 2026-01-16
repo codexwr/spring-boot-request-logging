@@ -105,4 +105,19 @@ public class ServletLoggingTest {
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    @DisplayName("No URL PATH")
+    public void noUrl() throws Exception {
+        var member = new WebTestApplication.Member("Alice", 20);
+
+        // when
+        var req = post("/no-url-path")
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(member));
+        mvc.perform(req)
+                .andExpect(status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
 }

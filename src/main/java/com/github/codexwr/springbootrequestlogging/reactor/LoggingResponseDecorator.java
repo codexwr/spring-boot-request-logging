@@ -46,11 +46,12 @@ class LoggingResponseDecorator extends ServerHttpResponseDecorator implements Lo
         super.beforeCommit(() -> action.get().then(logPrint()));
     }
 
-    private Mono<Void> logPrint() {
+    public Mono<Void> logPrint() {
+        var exchange = exchangeSupplier.get();
         return Mono.just(true)
                 .takeUntilOther(printComplete.asMono())
                 .doOnNext(it -> printComplete.tryEmitEmpty())
-                .flatMap(it -> getLogItem(exchangeSupplier.get(), loggingRequestDelegate, this, null))
+                .flatMap(it -> getLogItem(exchange, loggingRequestDelegate, this, null))
                 .doOnNext(logItem -> {
                     logPrinter.response(executionTime(),
                             Objects.requireNonNullElse(getStatusCode(), HttpStatus.VARIANT_ALSO_NEGOTIATES),
