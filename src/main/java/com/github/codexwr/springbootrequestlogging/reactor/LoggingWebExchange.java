@@ -47,10 +47,8 @@ class LoggingWebExchange extends ServerWebExchangeDecorator {
 
     public Mono<Void> enableResponseLoggingWhenError(Throwable error) {
         return Mono.defer(() -> {
-                    if (loggingResponseDecorator.getStatusCode() == null) {
-                        if (error instanceof ErrorResponseException statusException)
-                            loggingResponseDecorator.setStatusCode(statusException.getStatusCode());
-                    }
+                    if (error instanceof ErrorResponseException statusException)
+                        loggingResponseDecorator.setStatusCode(statusException.getStatusCode());
 
                     return loggingResponseDecorator.logPrint();
                 })
