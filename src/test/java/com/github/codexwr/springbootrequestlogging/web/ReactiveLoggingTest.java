@@ -122,4 +122,20 @@ public class ReactiveLoggingTest {
                 .exchange()
                 .expectStatus().isOk();
     }
+
+    @Test
+    @DisplayName("No URL PATH")
+    public void noUrl() {
+        // given
+        var member = new WebTestApplication.Member("Alice", 20);
+
+        // when
+        webClient.post()
+                .uri("/no-url-path")
+                .headers(it -> it.addAll(headers))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(member)
+                .exchange()
+                .expectStatus().is4xxClientError();
+    }
 }

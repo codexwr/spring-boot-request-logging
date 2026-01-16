@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.Getter;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.util.WebUtils;
 
 class LoggingRequestWrapper extends HttpServletRequestWrapper implements LoggingWrapper {
@@ -22,17 +21,7 @@ class LoggingRequestWrapper extends HttpServletRequestWrapper implements Logging
     public void logPrint() {
         executionTime = System.currentTimeMillis();
 
-        var session = getSession(false);
-
-        logPrinter.request(getHttpMethod(),
-                getRequestURI(),
-                getQueryString(),
-                getRemoteAddr(),
-                session != null ? session.getId() : null,
-                new ServletServerHttpRequest(this).getHeaders(),
-                getContentType(getContentType()),
-                getRequestBody()
-        );
+        logPrinter.request(getLogItem(this, null, null));
     }
 
     public HttpMethod getHttpMethod() {

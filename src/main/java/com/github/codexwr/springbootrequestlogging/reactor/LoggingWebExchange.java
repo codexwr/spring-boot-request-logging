@@ -4,6 +4,7 @@ import com.github.codexwr.springbootrequestlogging.configuration.LogPrinter;
 import jakarta.annotation.Nonnull;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebExchangeDecorator;
 import reactor.core.publisher.Mono;
@@ -25,7 +26,7 @@ class LoggingWebExchange extends ServerWebExchangeDecorator {
 
         // logger
         loggingRequestDecorator = new LoggingRequestDecorator(req, this::getDelegate, logPrinter);
-        loggingResponseDecorator = new LoggingResponseDecorator(res, loggingRequestDecorator, logPrinter);
+        loggingResponseDecorator = new LoggingResponseDecorator(res, this::getDelegate, loggingRequestDecorator, logPrinter);
     }
 
     @Override
@@ -42,5 +43,17 @@ class LoggingWebExchange extends ServerWebExchangeDecorator {
 
     public Mono<ServerWebExchange> enableLogging() {
         return Mono.defer(() -> loggingRequestDecorator.logPrint().then(Mono.just(this)));
+    }
+
+    public Mono<Void> enableResponseLoggingWhenError(Throwable error) {
+        return Mono.defer(() -> {
+                    if (loggingResponseDecorator.getStatusCode() == null) {
+                        if (error instanceof ErrorResponseException statusException)
+                            loggingResponseDecorator.setStatusCode(statusException.getStatusCode());
+                    }
+
+                    return loggingResponseDecorator.logPrint();
+                })
+                .then(Mono.error(error));
     }
 }

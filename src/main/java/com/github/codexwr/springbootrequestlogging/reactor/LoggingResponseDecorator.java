@@ -7,6 +7,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
@@ -15,14 +16,16 @@ import java.util.function.Supplier;
 
 class LoggingResponseDecorator extends ServerHttpResponseDecorator implements LoggingDecorator {
     private final LoggingRequestDecorator loggingRequestDelegate;
+    private final Supplier<ServerWebExchange> exchangeSupplier;
     private final LogPrinter logPrinter;
 
     private final Sinks.Empty<Void> printComplete = Sinks.empty();
 
-    public LoggingResponseDecorator(ServerHttpResponse delegate, LoggingRequestDecorator loggingRequestDelegate, LogPrinter logPrinter) {
+    public LoggingResponseDecorator(ServerHttpResponse delegate, Supplier<ServerWebExchange> exchangeSupplier, LoggingRequestDecorator loggingRequestDelegate, LogPrinter logPrinter) {
         super(delegate);
 
         this.loggingRequestDelegate = loggingRequestDelegate;
+        this.exchangeSupplier = exchangeSupplier;
         this.logPrinter = logPrinter;
     }
 
@@ -43,24 +46,21 @@ class LoggingResponseDecorator extends ServerHttpResponseDecorator implements Lo
         super.beforeCommit(() -> action.get().then(logPrint()));
     }
 
-    private Mono<Void> logPrint() {
+    public Mono<Void> logPrint() {
+        var exchange = exchangeSupplier.get();
         return Mono.just(true)
                 .takeUntilOther(printComplete.asMono())
-                .map(it -> printComplete.tryEmitEmpty())
-                .flatMap(it -> loggingRequestDelegate.getRequestBody())
-                .doOnNext(requestBody -> logPrinter.response(executionTime(),
-                        Objects.requireNonNullElse(getStatusCode(), HttpStatus.VARIANT_ALSO_NEGOTIATES),
-                        loggingRequestDelegate.getMethod(),
-                        loggingRequestDelegate.getURI().getPath(),
-                        loggingRequestDelegate.getURI().getQuery(),
-                        loggingRequestDelegate.getHeaders().getContentType(),
-                        requestBody.orElse(null),
-                        getHeaders().getContentType(),
-                        getResponseBody())
-                ).then();
+                .doOnNext(it -> printComplete.tryEmitEmpty())
+                .flatMap(it -> getLogItem(exchange, loggingRequestDelegate, this, null))
+                .doOnNext(logItem -> {
+                    logPrinter.response(executionTime(),
+                            Objects.requireNonNullElse(getStatusCode(), HttpStatus.VARIANT_ALSO_NEGOTIATES),
+                            logItem
+                    );
+                }).then();
     }
 
-    private String getResponseBody() {
+    public String getResponseBody() {
         var delegate = getNativeResponse(getDelegate(), CachedResponseDecorator.class);
         if (delegate != null) {
             return delegate.getCachedContentString();

@@ -26,18 +26,10 @@ class LoggingRequestDecorator extends ServerHttpRequestDecorator implements Logg
 
     public Mono<Void> logPrint() {
         executionTime = System.currentTimeMillis();
-        var exchange = exchangeSupplier.get();
 
-        return Mono.zip(exchange.getSession(), getRequestBody())
-                .doOnNext(sessionAndBody -> logPrinter.request(getMethod(),
-                        getURI().getPath(),
-                        getURI().getQuery(),
-                        getRemoteAddress() != null ? getRemoteAddress().getHostString() : null,
-                        sessionAndBody.getT1().isStarted() ? sessionAndBody.getT1().getId() : null,
-                        getHeaders(),
-                        getContentType(),
-                        sessionAndBody.getT2().orElse(null))
-                ).then();
+        return getLogItem(exchangeSupplier.get(), this, null, null)
+                .doOnNext(logPrinter::request)
+                .then();
     }
 
     public Mono<Optional<String>> getRequestBody() {

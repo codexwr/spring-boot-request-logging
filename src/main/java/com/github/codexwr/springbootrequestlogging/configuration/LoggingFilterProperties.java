@@ -160,6 +160,38 @@ public class LoggingFilterProperties {
      */
     private String exitPrefixDecor = "[-] ";
 
+    /**
+     * A list of default log items to be included in request logging.
+     * This list defines the specific elements of a request that will be logged by default.
+     * The default log items include:
+     * - URL: The request URL.
+     * - CLIENT_INFO: Client-related information (e.g., IP address, session ID).
+     * - USERNAME: Username of the authenticated user, if available.
+     * - HEADER: HTTP headers of the request.
+     * - EXTRA_INFO: Additional contextual information provided during the request.
+     * - REQUEST_BODY: The body content of the request.
+     */
+    private List<DefaultLogItemType> defaultRequestLogItems = List.of(
+            DefaultLogItemType.URL,
+            DefaultLogItemType.CLIENT_INFO,
+            DefaultLogItemType.USERNAME,
+            DefaultLogItemType.HEADER,
+            DefaultLogItemType.EXTRA_INFO,
+            DefaultLogItemType.REQUEST_BODY
+    );
+
+    /**
+     * A list of default log items to be included in response logging.
+     */
+    private List<DefaultLogItemType> defaultResponseLogItems = List.of(
+            DefaultLogItemType.URL,
+            DefaultLogItemType.CLIENT_INFO,
+            DefaultLogItemType.USERNAME,
+            DefaultLogItemType.EXTRA_INFO,
+            DefaultLogItemType.REQUEST_BODY,
+            DefaultLogItemType.RESPONSE_BODY
+    );
+
     @Data
     @NoArgsConstructor
     public static class ExcludeLoggingPath {
@@ -210,5 +242,9 @@ public class LoggingFilterProperties {
         public void setMethod(String method) {
             this.method = HttpMethod.valueOf(method.toUpperCase());
         }
+    }
+
+    public enum DefaultLogItemType {
+        URL, HEADER, CLIENT_INFO, USERNAME, REQUEST_BODY, RESPONSE_BODY, EXTRA_INFO
     }
 }

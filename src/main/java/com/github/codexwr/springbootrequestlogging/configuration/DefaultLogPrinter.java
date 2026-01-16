@@ -12,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+import java.util.Map;
+
 @RequiredArgsConstructor
 class DefaultLogPrinter implements LogPrinter {
     private final Logger logger = LoggerFactory.getLogger("LogPrinter");
@@ -29,38 +32,50 @@ class DefaultLogPrinter implements LogPrinter {
     }
 
     @Override
-    public void request(@Nonnull HttpMethod httpMethod, @Nonnull String url, @Nullable String queryString, @Nullable String remoteAddr, @Nullable String sessionId, @Nullable HttpHeaders header, @Nullable MediaType bodyContentType, @Nullable String body) {
-        Assert.notNull(httpMethod, "httpMethod must not be null");
-        Assert.notNull(url, "url must not be null");
-
+    public void request(@Nonnull LogItem logItem) {
         final var msg = new StringBuilder();
         if (StringUtils.hasText(properties.getEnterPrefixDecor()))
             msg.append(properties.getEnterPrefixDecor());
 
-        assembleUrl(msg, httpMethod, url, queryString);
-        assembleClientInfo(msg, remoteAddr, sessionId);
-        assembleUsername(msg);
-        assembleHeader(msg, httpMethod, url, header);
+        assembleLogItem(msg, properties.getDefaultRequestLogItems(), logItem);
 
         logger.info(msg.toString());
     }
 
     @Override
-    public void response(@Nullable Long executionTime, @Nonnull HttpStatusCode httpStatus, @Nonnull HttpMethod httpMethod, @Nonnull String url, @Nullable String queryString, @Nullable MediaType requestBodyContentType, @Nullable String requestBody, @Nullable MediaType responseBodyContentType, @Nullable String responseBody) {
+    public void response(@Nullable Long executionTime, @Nonnull HttpStatusCode httpStatus, @Nonnull LogItem logItem) {
         Assert.notNull(httpStatus, "httpStatus must not be null");
-        Assert.notNull(httpMethod, "httpMethod must not be null");
-        Assert.notNull(url, "url must not be null");
 
         final var msg = new StringBuilder();
         if (StringUtils.hasText(properties.getExitPrefixDecor()))
             msg.append(properties.getExitPrefixDecor());
 
         assembleResponseInfo(msg, executionTime, httpStatus);
-        assembleUrl(msg, httpMethod, url, queryString);
-        assembleRequestBody(msg, httpMethod, url, requestBodyContentType, requestBody);
-        assembleResponseBody(msg, httpMethod, url, responseBodyContentType, responseBody);
+        assembleLogItem(msg, properties.getDefaultResponseLogItems(), logItem);
 
         logger.info(msg.toString());
+    }
+
+    private void assembleLogItem(StringBuilder msg, List<LoggingFilterProperties.DefaultLogItemType> logItemTypes, LogItem logItem) {
+        for (LoggingFilterProperties.DefaultLogItemType logItemType : logItemTypes) {
+            switch (logItemType) {
+                case URL -> assembleUrl(msg, logItem.httpMethod(), logItem.url(), logItem.queryString());
+                case HEADER -> assembleHeader(msg, logItem.httpMethod(), logItem.url(), logItem.header());
+                case CLIENT_INFO -> assembleClientInfo(msg, logItem.remoteAddr(), logItem.sessionId());
+                case USERNAME -> assembleUsername(msg);
+                case REQUEST_BODY -> assembleRequestBody(msg, logItem.httpMethod(), logItem.url(), logItem.requestBodyContentType(), logItem.requestBody());
+                case RESPONSE_BODY -> assembleResponseBody(msg, logItem.httpMethod(), logItem.url(), logItem.responseBodyContentType(), logItem.responseBody());
+                case EXTRA_INFO -> assembleExtraInfo(msg, logItem.extraInfo());
+            }
+        }
+    }
+
+    private void assembleExtraInfo(StringBuilder msg, Map<String, String> extraInfo) {
+        if (extraInfo == null || extraInfo.isEmpty()) return;
+        for (var entry : extraInfo.entrySet()) {
+            if (entry.getValue() == null) continue;
+            msg.append(", ").append(entry.getKey()).append("=").append(entry.getValue());
+        }
     }
 
     private void assembleResponseInfo(StringBuilder msg, Long executionTime, HttpStatusCode httpStatus) {
