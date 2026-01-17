@@ -2,9 +2,13 @@ package com.github.codexwr.springbootrequestlogging.reactor;
 
 import com.github.codexwr.springbootrequestlogging.configuration.LogPrinter;
 import jakarta.annotation.Nonnull;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.ErrorResponseException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebExchangeDecorator;
 import reactor.core.publisher.Mono;
@@ -47,11 +51,18 @@ class LoggingWebExchange extends ServerWebExchangeDecorator {
 
     public Mono<Void> enableResponseLoggingWhenError(Throwable error) {
         return Mono.defer(() -> {
-                    if (error instanceof ErrorResponseException statusException)
-                        loggingResponseDecorator.setStatusCode(statusException.getStatusCode());
-
+                    loggingResponseDecorator.setStatusCode(determineStatusCode(error));
                     return loggingResponseDecorator.logPrint();
                 })
                 .then(Mono.error(error));
+    }
+
+    private HttpStatusCode determineStatusCode(Throwable error) {
+        if (error instanceof ErrorResponseException statusException) return statusException.getStatusCode();
+
+        var responseStatus = AnnotatedElementUtils.findMergedAnnotation(error.getClass(), ResponseStatus.class);
+        if (responseStatus != null) return responseStatus.code();
+
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 }

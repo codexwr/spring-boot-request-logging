@@ -1,6 +1,7 @@
 package com.github.codexwr.springbootrequestlogging.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -119,5 +121,17 @@ public class ServletLoggingTest {
         mvc.perform(req)
                 .andExpect(status().is4xxClientError())
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("Server RuntimeError")
+    public void runtimeError() {
+        // when
+        var req = get("/test/error")
+                .queryParam("email", "test@example.org")
+                .headers(headers);
+
+        var exception = assertThrows(ServletException.class, () -> mvc.perform(req));
+        System.out.println(exception.getMessage());
     }
 }

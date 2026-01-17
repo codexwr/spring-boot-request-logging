@@ -138,4 +138,26 @@ public class ReactiveLoggingTest {
                 .exchange()
                 .expectStatus().is4xxClientError();
     }
+
+    @Test
+    @DisplayName("Server RuntimeError")
+    public void runtimeError() {
+        // when
+        webClient.get()
+                .uri("/test/error")
+                .headers(it -> it.addAll(headers))
+                .exchange()
+                .expectStatus().is5xxServerError();
+    }
+
+    @Test
+    @DisplayName("Server RuntimeError(Async)")
+    public void runtimeErrorAsync() {
+        // when
+        webClient.get()
+                .uri("/test/error/async")
+                .headers(it -> it.addAll(headers))
+                .exchange()
+                .expectStatus().is5xxServerError();
+    }
 }
