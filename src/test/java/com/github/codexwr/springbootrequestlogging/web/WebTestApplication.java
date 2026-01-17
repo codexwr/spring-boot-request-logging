@@ -60,4 +60,15 @@ public class WebTestApplication {
 
         return Mono.just(ResponseEntity.ok(new ResponseDto(200, "OK")));
     }
+
+    @GetMapping("/error")
+    public ResponseEntity<ResponseDto> error() {
+        throw new RuntimeException("error");
+    }
+
+    @GetMapping("/error/async")
+    public Mono<ResponseEntity<ResponseDto>> errorAsync() {
+        return Mono.error(new RuntimeException("error async"));
+    }
+
 }

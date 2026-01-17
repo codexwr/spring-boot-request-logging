@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
@@ -44,20 +46,24 @@ class DefaultServletLoggingFilter extends OncePerRequestFilter implements Loggin
     }
 
     private void next(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        HttpStatusCode errorCode = null;
         try {
             filterChain.doFilter(request, response);
+        } catch (ServletException e) {
+            errorCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            throw e;
         } finally {
-            completeWithResponse(request, response);
+            completeWithResponse(request, response, errorCode);
         }
     }
 
-    private void completeWithResponse(HttpServletRequest request, HttpServletResponse response) {
+    private void completeWithResponse(HttpServletRequest request, HttpServletResponse response, HttpStatusCode errorCode) {
         if (isAsyncStarted(request)) return;
 
         var responseWrapper = WebUtils.getNativeResponse(response, LoggingResponseWrapper.class);
         if (responseWrapper == null) return;
 
-        responseWrapper.logPrint();
+        responseWrapper.logPrint(errorCode);
     }
 
 

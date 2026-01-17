@@ -18,10 +18,10 @@ class LoggingResponseWrapper extends HttpServletResponseWrapper implements Loggi
         this.logPrinter = logPrinter;
     }
 
-    public void logPrint() {
+    public void logPrint(HttpStatusCode errorCode) {
         logPrinter.response(
                 executionTime(),
-                HttpStatusCode.valueOf(getStatus()),
+                errorCode != null ? errorCode : HttpStatusCode.valueOf(getStatus()),
                 getLogItem(loggingRequestWrapper, this, null)
         );
     }
